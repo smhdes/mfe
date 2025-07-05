@@ -54,9 +54,11 @@ const StudentModal: React.FC<StudentModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted with data:', formData);
     
     if (studentToEdit) {
       // Edit existing student
+      console.log('Editing student:', studentToEdit.id);
       const updatedStudents = students.map(student => 
         student.id === studentToEdit.id 
           ? { ...student, ...formData }
@@ -66,12 +68,14 @@ const StudentModal: React.FC<StudentModalProps> = ({
       onSuccess('Öğrenci başarıyla güncellendi!');
     } else {
       // Add new student
+      console.log('Adding new student');
       const newStudent = {
         id: Date.now(), // Simple ID generation
         ...formData,
         avatar: undefined,
         createdAt: new Date()
       };
+      console.log('New student data:', newStudent);
       setStudents([...students, newStudent]);
       onSuccess('Öğrenci başarıyla eklendi!');
     }

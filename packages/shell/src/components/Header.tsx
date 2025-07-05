@@ -64,13 +64,24 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
               </svg>
             </button>
             <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden text-gray-400 hover:text-gray-500 p-2 rounded-full hover:bg-gray-100"
+              onClick={(e) => {
+                e.preventDefault();
+                console.log('Mobile menu button clicked:', !isMobileMenuOpen);
+                setIsMobileMenuOpen(!isMobileMenuOpen);
+              }}
+              className="md:hidden text-gray-400 hover:text-gray-500 p-2 rounded-full hover:bg-gray-100 relative z-50"
+              type="button"
             >
               <span className="sr-only">Menü</span>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              {isMobileMenuOpen ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
             </button>
           </div>
         </div>
