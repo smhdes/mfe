@@ -24,8 +24,9 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white text-sm font-bold">🎓</span>
               </div>
-              <h1 className="ml-3 text-xl font-semibold text-gray-900">
-                Üniversite Dashboard
+              <h1 className="ml-2 sm:ml-3 text-sm xs:text-base sm:text-lg md:text-xl font-semibold text-gray-900">
+                <span className="hidden xs:inline">Üniversite Dashboard</span>
+                <span className="xs:hidden">Ü.D</span>
               </h1>
             </div>
           </div>
@@ -76,7 +77,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden pb-4 border-t border-gray-200">
+          <div className="md:hidden pb-4 border-t border-gray-200 transition-all duration-200 ease-in-out">
             <nav className="flex flex-col space-y-2 pt-4">
               {tabs.map((tab) => (
                 <button

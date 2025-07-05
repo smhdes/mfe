@@ -29,7 +29,7 @@ const UserCardPlaceholder: React.FC = () => {
   return (
     <div className="lg:col-span-4">
       <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="flex items-center space-x-4 mb-6">
             <div className="w-16 h-16 bg-gray-200 rounded-full overflow-hidden">
               {user.avatar ? (
@@ -135,12 +135,12 @@ const ContentBarPlaceholder: React.FC = () => {
 
   return (
     <div className="lg:col-span-8">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-4 sm:space-y-0">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Öğrenci Listesi</h2>
           <p className="text-sm text-gray-600">Tüm kayıtlı öğrenciler ve durumları</p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
           <select 
             value={studentFilter} 
             onChange={(e) => setStudentFilter(e.target.value as 'all' | 'local' | 'international')}
@@ -165,8 +165,8 @@ const ContentBarPlaceholder: React.FC = () => {
       <div className="space-y-4">
         {filteredStudents.map((student) => (
           <div key={student.id} className="bg-white shadow-sm border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-            <div className="p-6">
-              <div className="flex items-center justify-between">
+            <div className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-gray-200 rounded-full overflow-hidden">
                     {student.avatar ? (
@@ -187,9 +187,9 @@ const ContentBarPlaceholder: React.FC = () => {
                     <p className="text-sm text-gray-500">{student.department}</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <div className="text-right">
-                    <div className="flex items-center space-x-2 mb-1">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                  <div className="flex flex-col sm:text-right">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
                       {student.isInternational ? (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                           Yabancı
@@ -210,7 +210,7 @@ const ContentBarPlaceholder: React.FC = () => {
                       setStudentToEdit(student);
                       setIsStudentModalOpen(true);
                     }}
-                    className="text-blue-600 hover:text-blue-800 p-2 rounded-md hover:bg-blue-50 transition-colors"
+                    className="text-blue-600 hover:text-blue-800 p-2 rounded-md hover:bg-blue-50 transition-colors self-start sm:self-center"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -222,6 +222,15 @@ const ContentBarPlaceholder: React.FC = () => {
           </div>
         ))}
       </div>
+      
+      {/* Load More Button */}
+      {filteredStudents.length > 0 && (
+        <div className="mt-6 text-center">
+          <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-md text-sm font-medium transition-colors">
+            Daha Fazla Yükle ({filteredStudents.length} öğrenci gösteriliyor)
+          </button>
+        </div>
+      )}
       
       <StudentModal
         isOpen={isStudentModalOpen}
@@ -257,7 +266,7 @@ const MainContent: React.FC = () => {
       case 'dashboard':
       default:
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8">
             <UserCardPlaceholder />
             <ContentBarPlaceholder />
           </div>
@@ -268,7 +277,7 @@ const MainContent: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header activeTab={activeTab} onTabChange={setActiveTab} />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
         {renderTabContent()}
       </main>
     </div>
