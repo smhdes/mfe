@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from './components/Header';
 import { DashboardProvider, useDashboard } from './providers/DashboardProvider';
 import LoadingSpinner from './components/LoadingSpinner';
+import StudentsTab from './components/StudentsTab';
+import CoursesTab from './components/CoursesTab';
+import ReportsTab from './components/ReportsTab';
+import StudentModal from './components/StudentModal';
+import Toast from './components/Toast';
 
 // Temporary inline components until microfrontends are properly set up
 const UserCardPlaceholder: React.FC = () => {
@@ -11,6 +16,9 @@ const UserCardPlaceholder: React.FC = () => {
     toggleNotificationDrawer, 
     unreadNotificationCount 
   } = useDashboard();
+
+  const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
+  const [toast, setToast] = useState({ message: '', type: 'success' as const, isVisible: false });
 
   if (!user) return <LoadingSpinner />;
 
@@ -77,7 +85,10 @@ const UserCardPlaceholder: React.FC = () => {
 
           <div className="border-t border-gray-100 pt-4">
             <div className="space-y-2">
-              <button className="w-full flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded">
+              <button 
+                onClick={() => setIsStudentModalOpen(true)}
+                className="w-full flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded"
+              >
                 <svg className="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
@@ -92,6 +103,19 @@ const UserCardPlaceholder: React.FC = () => {
             </div>
           </div>
         </div>
+        
+        <StudentModal
+          isOpen={isStudentModalOpen}
+          onClose={() => setIsStudentModalOpen(false)}
+          onSuccess={(message) => setToast({ message, type: 'success', isVisible: true })}
+        />
+        
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          isVisible={toast.isVisible}
+          onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+        />
       </div>
     </div>
   );
@@ -99,6 +123,9 @@ const UserCardPlaceholder: React.FC = () => {
 
 const ContentBarPlaceholder: React.FC = () => {
   const { students, studentFilter, setStudentFilter } = useDashboard();
+  const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
+  const [studentToEdit, setStudentToEdit] = useState<any>(null);
+  const [toast, setToast] = useState({ message: '', type: 'success' as const, isVisible: false });
 
   const filteredStudents = students.filter(student => {
     if (studentFilter === 'local') return !student.isInternational;
@@ -123,7 +150,13 @@ const ContentBarPlaceholder: React.FC = () => {
             <option value="local">Yerli Öğrenciler</option>
             <option value="international">Yabancı Öğrenciler</option>
           </select>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+          <button 
+            onClick={() => {
+              setStudentToEdit(null);
+              setIsStudentModalOpen(true);
+            }}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+          >
             Yeni Öğrenci
           </button>
         </div>
@@ -172,12 +205,72 @@ const ContentBarPlaceholder: React.FC = () => {
                     </div>
                     <p className="text-sm text-gray-500">{student.year}. Sınıf</p>
                   </div>
+                  <button
+                    onClick={() => {
+                      setStudentToEdit(student);
+                      setIsStudentModalOpen(true);
+                    }}
+                    className="text-blue-600 hover:text-blue-800 p-2 rounded-md hover:bg-blue-50 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         ))}
       </div>
+      
+      <StudentModal
+        isOpen={isStudentModalOpen}
+        onClose={() => {
+          setIsStudentModalOpen(false);
+          setStudentToEdit(null);
+        }}
+        studentToEdit={studentToEdit}
+        onSuccess={(message) => setToast({ message, type: 'success', isVisible: true })}
+      />
+      
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+      />
+    </div>
+  );
+};
+
+const MainContent: React.FC = () => {
+  const [activeTab, setActiveTab] = useState('dashboard');
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'students':
+        return <StudentsTab />;
+      case 'courses':
+        return <CoursesTab />;
+      case 'reports':
+        return <ReportsTab />;
+      case 'dashboard':
+      default:
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <UserCardPlaceholder />
+            <ContentBarPlaceholder />
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header activeTab={activeTab} onTabChange={setActiveTab} />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {renderTabContent()}
+      </main>
     </div>
   );
 };
@@ -185,15 +278,7 @@ const ContentBarPlaceholder: React.FC = () => {
 const App: React.FC = () => {
   return (
     <DashboardProvider>
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <UserCardPlaceholder />
-            <ContentBarPlaceholder />
-          </div>
-        </main>
-      </div>
+      <MainContent />
     </DashboardProvider>
   );
 };
