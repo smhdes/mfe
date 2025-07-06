@@ -6,15 +6,44 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useDashboardStore } from '@/stores/dashboardStore';
 import { Student } from '@shared/schema';
+import { useState } from 'react';
+import StudentModal from './StudentModal';
 
 export default function ContentBar() {
-  const { students, studentFilter, setStudentFilter } = useDashboardStore();
+  const { students, studentFilter, setStudentFilter, addStudent, updateStudent } = useDashboardStore();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editStudent, setEditStudent] = useState<Student | null>(null);
 
   const filteredStudents = students.filter(student => {
     if (studentFilter === 'local') return !student.isInternational;
     if (studentFilter === 'international') return student.isInternational;
     return true;
   });
+
+  const handleAdd = () => {
+    setEditStudent(null);
+    setModalOpen(true);
+  };
+
+  const handleEdit = (student: Student) => {
+    setEditStudent(student);
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setEditStudent(null);
+  };
+
+  const handleModalSave = (student: Omit<Student, 'id'> | Student) => {
+    if ('id' in student) {
+      updateStudent(student as Student);
+    } else {
+      addStudent(student as Omit<Student, 'id'>);
+    }
+    setModalOpen(false);
+    setEditStudent(null);
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -44,18 +73,18 @@ export default function ContentBar() {
   };
 
   return (
-    <div className="lg:col-span-8">
+    <div>
       {/* Content Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Öğrenci Listesi</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Öğrenci Listesi</h2>
           <p className="text-sm text-gray-600">
             Tüm kayıtlı öğrenciler ve durumları
           </p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
           <Select value={studentFilter} onValueChange={(value: 'all' | 'local' | 'international') => setStudentFilter(value)}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Filtre seçin" />
             </SelectTrigger>
             <SelectContent>
@@ -64,7 +93,7 @@ export default function ContentBar() {
               <SelectItem value="international">Yabancı Öğrenciler</SelectItem>
             </SelectContent>
           </Select>
-          <Button className="bg-primary text-white hover:bg-primary/90">
+          <Button className="bg-primary text-white hover:bg-primary/90 w-full sm:w-auto" onClick={handleAdd}>
             <Plus className="w-4 h-4 mr-2" />
             Yeni Öğrenci
           </Button>
@@ -75,26 +104,26 @@ export default function ContentBar() {
       <div className="space-y-4">
         {filteredStudents.map((student) => (
           <Card key={student.id} className="shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                 <div className="flex items-center space-x-4">
-                  <Avatar className="w-12 h-12">
+                  <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
                     <AvatarImage src={student.avatar || ''} alt={student.name} />
                     <AvatarFallback>
                       {student.name.split(' ').map(n => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{student.name}</h3>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-semibold text-gray-900 truncate">{student.name}</h3>
                     <p className="text-sm text-gray-600">
                       Öğrenci No: {student.studentId}
                     </p>
-                    <p className="text-sm text-gray-500">{student.department}</p>
+                    <p className="text-sm text-gray-500 truncate">{student.department}</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <div className="text-right">
-                    <div className="flex items-center space-x-2 mb-1">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                  <div className="text-left sm:text-right">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
                       {getStudentTypeBadge(student.isInternational)}
                       {getStatusBadge(student.status)}
                     </div>
@@ -112,6 +141,7 @@ export default function ContentBar() {
                       variant="ghost"
                       size="sm"
                       className="text-gray-400 hover:text-green-600 p-2 rounded-full hover:bg-green-50"
+                      onClick={() => handleEdit(student)}
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
@@ -127,12 +157,15 @@ export default function ContentBar() {
       <div className="mt-8 text-center">
         <Button
           variant="outline"
-          className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+          className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50 w-full sm:w-auto"
         >
           <ChevronDown className="w-4 h-4 mr-2" />
           Daha Fazla Öğrenci Yükle
         </Button>
       </div>
+
+      {/* Modal */}
+      <StudentModal open={modalOpen} onClose={handleModalClose} onSave={handleModalSave} student={editStudent} />
     </div>
   );
 }

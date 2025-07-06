@@ -27,6 +27,21 @@ export const students = pgTable("students", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const courses = pgTable("courses", {
+  id: serial("id").primaryKey(),
+  courseCode: text("course_code").notNull().unique(),
+  name: text("name").notNull(),
+  description: text("description"),
+  department: text("department").notNull(),
+  credits: integer("credits").notNull(),
+  instructor: text("instructor").notNull(),
+  semester: text("semester").notNull(),
+  status: text("status").notNull().default("active"),
+  maxStudents: integer("max_students"),
+  currentStudents: integer("current_students").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const notifications = pgTable("notifications", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
@@ -47,6 +62,11 @@ export const insertStudentSchema = createInsertSchema(students).omit({
   createdAt: true,
 });
 
+export const insertCourseSchema = createInsertSchema(courses).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertNotificationSchema = createInsertSchema(notifications).omit({
   id: true,
   createdAt: true,
@@ -56,5 +76,7 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Student = typeof students.$inferSelect;
 export type InsertStudent = z.infer<typeof insertStudentSchema>;
+export type Course = typeof courses.$inferSelect;
+export type InsertCourse = z.infer<typeof insertCourseSchema>;
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;

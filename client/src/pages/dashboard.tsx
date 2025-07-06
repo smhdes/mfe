@@ -18,10 +18,14 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <UserCard />
-          <ContentBar />
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 sm:gap-6 lg:gap-8">
+          <div className="xl:col-span-4 order-2 xl:order-1">
+            <UserCard />
+          </div>
+          <div className="xl:col-span-8 order-1 xl:order-2">
+            <ContentBar />
+          </div>
         </div>
       </main>
     </div>

@@ -1,4 +1,4 @@
-import { User, Student, Notification } from '@shared/schema';
+import { User, Student, Notification, Course } from '@shared/schema';
 
 export const mockUser: User = {
   id: 1,
@@ -79,6 +79,79 @@ export const mockStudents: Student[] = [
   },
 ];
 
+export const mockCourses: Course[] = [
+  {
+    id: 1,
+    courseCode: 'CS101',
+    name: 'Bilgisayar Programlama',
+    description: 'Temel programlama kavramları ve algoritma geliştirme',
+    department: 'Bilgisayar Mühendisliği',
+    credits: 4,
+    instructor: 'Prof. Dr. Ali Yılmaz',
+    semester: 'Güz 2024',
+    status: 'active',
+    maxStudents: 50,
+    currentStudents: 45,
+    createdAt: new Date(),
+  },
+  {
+    id: 2,
+    courseCode: 'MATH201',
+    name: 'Matematik II',
+    description: 'İleri matematik konuları ve uygulamaları',
+    department: 'Matematik',
+    credits: 3,
+    instructor: 'Dr. Fatma Demir',
+    semester: 'Güz 2024',
+    status: 'active',
+    maxStudents: 60,
+    currentStudents: 58,
+    createdAt: new Date(),
+  },
+  {
+    id: 3,
+    courseCode: 'ENG101',
+    name: 'İngilizce I',
+    description: 'Temel İngilizce dil becerileri',
+    department: 'Yabancı Diller',
+    credits: 2,
+    instructor: 'Öğr. Gör. Sarah Johnson',
+    semester: 'Güz 2024',
+    status: 'active',
+    maxStudents: 40,
+    currentStudents: 35,
+    createdAt: new Date(),
+  },
+  {
+    id: 4,
+    courseCode: 'PHY101',
+    name: 'Fizik I',
+    description: 'Temel fizik prensipleri ve laboratuvar uygulamaları',
+    department: 'Fizik',
+    credits: 4,
+    instructor: 'Prof. Dr. Mehmet Kaya',
+    semester: 'Güz 2024',
+    status: 'inactive',
+    maxStudents: 45,
+    currentStudents: 0,
+    createdAt: new Date(),
+  },
+  {
+    id: 5,
+    courseCode: 'CHEM101',
+    name: 'Genel Kimya',
+    description: 'Temel kimya kavramları ve laboratuvar deneyleri',
+    department: 'Kimya',
+    credits: 3,
+    instructor: 'Dr. Ayşe Özkan',
+    semester: 'Güz 2024',
+    status: 'active',
+    maxStudents: 55,
+    currentStudents: 52,
+    createdAt: new Date(),
+  },
+];
+
 export const mockNotifications: Notification[] = [
   {
     id: 1,
@@ -113,10 +186,22 @@ export const getStudentStats = (students: Student[]) => {
   const totalStudents = students.length;
   const activeStudents = students.filter(s => s.status === 'active').length;
   const internationalStudents = students.filter(s => s.isInternational).length;
-  
+
   return {
     totalStudents,
     activeStudents,
     internationalStudents,
+  };
+};
+
+export const getCourseStats = (courses: Course[]) => {
+  const totalCourses = courses.length;
+  const activeCourses = courses.filter(c => c.status === 'active').length;
+  const totalStudents = courses.reduce((sum, course) => sum + (course.currentStudents || 0), 0);
+
+  return {
+    totalCourses,
+    activeCourses,
+    totalStudents,
   };
 };
